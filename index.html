@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart File Converter</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+    }
+    header {
+      background: #ff4d4d;
+      padding: 20px;
+      color: white;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .tool-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: 0.2s;
+    }
+    .tool-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+    input[type="file"] {
+      margin: 12px 0;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background: #ff4d4d;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #e60000;
+    }
+  </style>
+</head>
+<body>
+  <header>Smart File Converter (iLovePDF Style)</header>
+
+  <div class="container">
+    <div class="tool-card">
+      <h2>Word to PDF</h2>
+      <input type="file" id="wordFile" />
+      <button onclick="convertWordPDF()">Convert</button>
+    </div>
+
+    <div class="tool-card">
+      <h2>PDF to Word</h2>
+      <input type="file" id="pdfFile" />
+      <button onclick="convertPDFWord()">Convert</button>
+    </div>
+
+    <div class="tool-card">
+      <h2>Image to PDF</h2>
+      <input type="file" id="imagePDF" />
+      <button onclick="convertImagePDF()">Convert</button>
+    </div>
+
+    <div class="tool-card">
+      <h2>PPT to PDF</h2>
+      <input type="file" id="pptFile" />
+      <button onclick="convertPPTPDF()">Convert</button>
+    </div>
+
+    <div class="tool-card">
+      <h2>Image Compressor</h2>
+      <input type="file" id="imgComp" />
+      <button onclick="compressImage()">Compress</button>
+    </div>
+
+    <div class="tool-card">
+      <h2>Video Compressor</h2>
+      <input type="file" id="vidComp" />
+      <button onclick="compressVideo()">Compress</button>
+    </div>
+  </div>
+
+  <script>
+    const API = "https://file-converter-backend.onrender.com"; // Replace with your API URL
+
+    async function convertWordPDF() {
+      const file = document.getElementById("wordFile").files[0];
+      if (!file) return alert("Upload a file");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API}/api/word-to-pdf`, { method: "POST", body: formData });
+      if (!res.ok) return alert('Conversion failed: ' + res.statusText);
+      const blob = await res.blob();
+
+      downloadBlob(blob, "output.pdf");
+    }
+
+    async function convertPDFWord() {
+      const file = document.getElementById("pdfFile").files[0];
+      if (!file) return alert("Upload a file");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API}/api/pdf-to-word`, { method: "POST", body: formData });
+      if (!res.ok) return alert('Conversion failed: ' + res.statusText);
+      const blob = await res.blob();
+
+      downloadBlob(blob, "output.docx");
+    }
+
+    async function convertImagePDF() {
+      const file = document.getElementById("imagePDF").files[0];
+      if (!file) return alert("Upload a file");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API}/api/image-to-pdf`, { method: "POST", body: formData });
+      if (!res.ok) return alert('Conversion failed: ' + res.statusText);
+      const blob = await res.blob();
+
+      downloadBlob(blob, "image.pdf");
+    }
+
+    async function convertPPTPDF() {
+      const file = document.getElementById("pptFile").files[0];
+      if (!file) return alert("Upload a file");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API}/api/ppt-to-pdf`, { method: "POST", body: formData });
+      if (!res.ok) return alert('Conversion failed: ' + res.statusText);
+      const blob = await res.blob();
+
+      downloadBlob(blob, "slides.pdf");
+    }
+
+    async function compressImage() {
+      const file = document.getElementById("imgComp").files[0];
+      if (!file) return alert("Upload a file");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API}/api/compress-image`, { method: "POST", body: formData });
+      if (!res.ok) return alert('Compression failed: ' + res.statusText);
+      const blob = await res.blob();
+
+      downloadBlob(blob, "compressed.jpg");
+    }
+
+    async function compressVideo() {
+      const file = document.getElementById("vidComp").files[0];
+      if (!file) return alert("Upload a file");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API}/api/compress-video`, { method: "POST", body: formData });
+      if (!res.ok) return alert('Compression failed: ' + res.statusText);
+      const blob = await res.blob();
+
+      downloadBlob(blob, "compressed.mp4");
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+    }
+  </script>
+</body>
+</html>

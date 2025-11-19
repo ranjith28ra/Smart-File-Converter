@@ -1,0 +1,27 @@
+# Dockerfile (production-ready)
+FROM node:18-bullseye
+
+
+# Install system deps: libreoffice, ffmpeg, build tools for sharp
+RUN apt-get update && apt-get install -y --no-install-recommends \
+libreoffice \
+ffmpeg \
+build-essential \
+python3 \
+pkg-config \
+libvips-dev \
+&& rm -rf /var/lib/apt/lists/*
+
+
+WORKDIR /usr/src/app
+
+
+COPY package.json package-lock.json* ./
+RUN npm install --production
+
+
+COPY . .
+
+
+EXPOSE 3000
+CMD ["node", "server.js"]
